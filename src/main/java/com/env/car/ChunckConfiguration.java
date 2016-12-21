@@ -1,5 +1,7 @@
 package com.env.car;
 
+import java.util.Arrays;
+
 import javax.sql.DataSource;
 
 import org.springframework.batch.core.Job;
@@ -17,6 +19,7 @@ import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 
 import com.env.car.model.CarModel;
@@ -27,6 +30,8 @@ import com.env.car.step.writer.CarWriter;
 @EnableBatchProcessing
 public class ChunckConfiguration {
 
+	@Autowired
+	Environment environment;
 	@Autowired
 	JobBuilderFactory jobBuilderFactory;
 	
@@ -61,7 +66,7 @@ public class ChunckConfiguration {
         reader.setResource(new ClassPathResource("CO2_passenger_cars_v5.csv"));
         reader.setLineMapper(new DefaultLineMapper<CarModel>() {{
             setLineTokenizer(new DelimitedLineTokenizer() {{
-                setNames(new String[] { "id", "pays","marque" });
+                setNames(environment.getProperty("org.eu.car.properties", String[].class));
                 setDelimiter(DELIMITER_TAB);
                 setStrict(false);
             }});
